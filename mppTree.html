@@ -1,0 +1,81 @@
+<html>
+<style>
+.mpp_tree{
+  --spacing : 1.5rem;
+  --radius  : 10px;
+}
+
+.mpp_tree li{
+  display      : block;
+  position     : relative;
+  padding-left : calc(2 * var(--spacing) - var(--radius) - 2px);
+}
+
+.mpp_tree ul{
+  margin-left  : calc(var(--radius) - var(--spacing));
+  padding-left : 0;
+}
+</style>
+
+<!--------------------- MPP DIV -------------------------->
+<div id="mpp_tree1" class="mpp_tree">
++Main               
+  +Configuration    
+    Interval        =  "#Interval"     
+    Ip's            =  "#ips"   
+    Start/Stop      =  "#StartStop"   
+  +Reporting        
+    Output          =  "#output" 
+</div>
+
+<!--------------------------------------------------------->
+
+
+<script type="text/javascript">
+//  *******************************
+//  MARKUP PRE PROCESSOR
+//  *******************************
+
+// simplify document.getElementByID() to getid()
+ function getid(obj){ return document.getElementById(obj); }
+// --------------------------------------------------------------------
+// PARSE AND CONSTUCT AN MPP_TREE
+function mpp_tree(id){
+    // get the contents of the div
+        var divx = getid(id);
+        var txt = divx.innerHTML;
+        var output = "";
+        var outputArr = new Array()
+        var parts = new Array()
+        var prevType = ""
+        txt.split("\n").forEach((line) => {
+        if(line.match(/^\s+\+/) ||
+           line.match(/^\+/)){ 
+              line  = line.replace(/^\+/, "").replace(/[\s]+$/, "")
+              if(prevType == "li") {  output = output + "</details>" }
+              output =  output + "<details><summary>" + line.replace(/[\s]+\+/, "") + "</summary>"
+              prevType = "summary"
+          }
+         else { 
+            if(line.match(/[\s]+\=/)){ 
+              parts = line.split(/[\s]+\=[\s]+/) 
+              var label = parts[1].replace(/^[\s]+/, "").replace(/[\s]+$/, "")
+              output = output + "<li>" + "<a href = " + label + " >" + parts[0] + "</a>" +  "</li>" 
+           }
+          prevType = "li"
+      }
+
+      });
+   console.log(output)   
+    divx.innerHTML = output
+ }
+//---------------------------------------------------------------------
+    window.onload = function() {
+      var newh = mpp_tree("mpp_tree1");
+   }
+
+
+</script>
+
+
+</html>
